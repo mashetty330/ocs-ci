@@ -3,10 +3,12 @@ import argparse
 import base64
 import binascii
 import os
+import re
 import yaml
 
 from os import environ as env
 from configparser import ConfigParser
+from semantic_version import Version
 
 
 def parse_args():
@@ -79,7 +81,7 @@ def write_pull_secret():
         secret_file.write(secret)
 
 
-def get_ocsci_conf():
+def get_ocsci_conf(pre_upgrade=False):
     cluster_user = env["CLUSTER_USER"]
     pipeline_id = env["BUILD_ID"]
     conf_obj = dict(
@@ -102,9 +104,15 @@ def get_ocsci_conf():
         conf_obj["REPORTING"]["us_ds"] = "DS"
     if env.get("SMTP_SERVER"):
         conf_obj["REPORTING"]["email"] = dict(smtp_server=env["SMTP_SERVER"])
-    conf_obj["DEPLOYMENT"] = dict(
-        ocs_registry_image=env["OCS_REGISTRY_IMAGE"],
-    )
+    if pre_upgrade:
+        version = Version.coerce(
+            env["OCS_REGISTRY_IMAGE"].split(":")[1]).truncate("minor")
+        version.minor -= 1
+        conf_obj["ENV_DATA"]["ocs_version"] = str(version)
+    else:
+        conf_obj["DEPLOYMENT"] = dict(
+            ocs_registry_image=env["OCS_REGISTRY_IMAGE"],
+        )
     if env.get("OCP_VERSION"):
         conf_obj["DEPLOYMENT"]["ocp_version"] = env["OCP_VERSION"]
     return conf_obj
@@ -116,6 +124,12 @@ def write_ocsci_conf():
     ocp_conf_path = os.path.join(env["WORKSPACE"], "ocs-ci-ocp.yaml")
     with open(ocp_conf_path, "w") as ocp_conf_file:
         ocp_conf_file.write(yaml.safe_dump(ocp_conf))
+
+    if bool(env.get("UPGRADE")) is True:
+        ocs_conf = get_ocsci_conf(pre_upgrade=True)
+        ocs_pre_conf_path = os.path.join(env["WORKSPACE"], "ocs-ci-pre-ocs.yaml")
+        with open(ocs_pre_conf_path, "w") as ocs_pre_conf_file:
+            ocs_pre_conf_file.write(yaml.safe_dump(ocs_conf))
 
     ocs_conf = get_ocsci_conf()
     ocs_conf["ENV_DATA"]["skip_ocp_deployment"] = True
