@@ -108,12 +108,10 @@ def get_ocsci_conf(pre_upgrade=False):
         version = Version.coerce(
             env["OCS_REGISTRY_IMAGE"].split(":")[1]).truncate("minor")
         version.minor -= 1
-        conf_obj["DEPLOYMENT"]["ocs_version"] = f"{version}-ga"
+        conf_obj["DEPLOYMENT"] = dict(ocs_version=f"{version}-ga")
         conf_obj["ENV_DATA"]["ocs_version"] = str(version)
     else:
-        conf_obj["DEPLOYMENT"] = dict(
-            ocs_registry_image=env["OCS_REGISTRY_IMAGE"],
-        )
+        conf_obj["DEPLOYMENT"] = dict(ocs_registry_image=env["OCS_REGISTRY_IMAGE"])
     if env.get("OCP_VERSION"):
         conf_obj["DEPLOYMENT"]["ocp_version"] = env["OCP_VERSION"]
     return conf_obj
