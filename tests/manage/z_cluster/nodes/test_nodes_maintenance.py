@@ -5,7 +5,6 @@ import time
 
 from subprocess import TimeoutExpired
 
-from ocs_ci.framework.pytest_customization.marks import skipif_vsphere_ipi
 from ocs_ci.ocs.exceptions import CephHealthException, ResourceWrongStatusException
 from ocs_ci.utility.utils import ceph_health_check_base, TimeoutSampler
 
@@ -162,7 +161,6 @@ class TestNodesMaintenance(ManageTest):
     @tier4
     @tier4b
     @skipif_bm
-    @skipif_vsphere_ipi
     @pytest.mark.parametrize(
         argnames=["node_type"],
         argvalues=[

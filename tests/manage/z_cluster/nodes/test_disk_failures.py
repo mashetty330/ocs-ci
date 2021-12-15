@@ -1,7 +1,6 @@
 import logging
 import pytest
 
-from ocs_ci.framework.pytest_customization.marks import skipif_vsphere_ipi
 from ocs_ci.ocs import node, constants
 from ocs_ci.framework import config
 from ocs_ci.framework.testlib import (
@@ -208,7 +207,6 @@ class TestDiskFailures(ManageTest):
 
     @bugzilla("1830702")
     @vsphere_platform_required
-    @skipif_vsphere_ipi
     @pytest.mark.polarion_id("OCS-2172")
     def test_recovery_from_volume_deletion(
         self, nodes, pvc_factory, pod_factory, bucket_factory, rgw_bucket_factory

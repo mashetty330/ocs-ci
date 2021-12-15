@@ -17,6 +17,7 @@ from ocs_ci.deployment.vmware import (
 )
 from ocs_ci.ocs.exceptions import TimeoutExpiredError, NotAllNodesCreated
 from ocs_ci.framework import config, merge_dict
+from ocs_ci.ocs.machine import get_machine_objs
 from ocs_ci.utility import templating
 from ocs_ci.utility.csr import approve_pending_csr
 from ocs_ci.utility.load_balancer import LoadBalancer
@@ -210,14 +211,22 @@ class VMWareNodes(NodesBase):
             list: vSphere vm objects list
 
         """
-        vms_in_pool = self.vsphere.get_all_vms_in_pool(
-            self.cluster_name, self.datacenter, self.cluster
-        )
-        node_names = [node.get().get("metadata").get("name") for node in nodes]
         vms = []
-        for node in node_names:
-            node_vms = [vm for vm in vms_in_pool if vm.name in node]
-            vms.extend(node_vms)
+
+        if self.deployment_type == "UPI":
+            vms_in_pool = self.vsphere.get_all_vms_in_pool(
+                self.cluster_name, self.datacenter, self.cluster
+            )
+            node_names = [node.get().get("metadata").get("name") for node in nodes]
+
+            for node in node_names:
+                node_vms = [vm for vm in vms_in_pool if vm.name in node]
+                vms.extend(node_vms)
+        elif self.deployment_type == "IPI":
+            vms = get_machine_objs()
+
+        else:
+            logger.error("Deployment type not detected")
         return vms
 
     def get_data_volumes(self, pvs=None):
