@@ -1,4 +1,6 @@
 import logging
+from semantic_version import Version
+
 from ocs_ci.framework import config
 
 import pytest
@@ -41,7 +43,7 @@ class TestMCGResourcesDisruptions(MCGTest):
 
     nb_db_label = (
         constants.NOOBAA_DB_LABEL_46_AND_UNDER
-        if float(config.ENV_DATA["ocs_version"]) < 4.7
+        if Version.coerce(config.ENV_DATA["ocs_version"]) < Version.coerce('4.7')
         else constants.NOOBAA_DB_LABEL_47_AND_ABOVE
     )
     labels_map = {
