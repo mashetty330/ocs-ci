@@ -108,6 +108,7 @@ def get_ocsci_conf(pre_upgrade=False):
         version = Version.coerce(
             env["OCS_REGISTRY_IMAGE"].split(":")[1]).truncate("minor")
         version.minor -= 1
+        conf_obj["DEPLOYMENT"]["ocs_version"] = f"{version}-ga"
         conf_obj["ENV_DATA"]["ocs_version"] = str(version)
     else:
         conf_obj["DEPLOYMENT"] = dict(
@@ -119,14 +120,16 @@ def get_ocsci_conf(pre_upgrade=False):
 
 
 def write_ocsci_conf():
-    ocp_conf = get_ocsci_conf()
+    upgrade = bool(env.get("UPGRADE"))
+    ocp_conf = get_ocsci_conf(pre_upgrade=upgrade)
     ocp_conf["ENV_DATA"]["skip_ocs_deployment"] = True
     ocp_conf_path = os.path.join(env["WORKSPACE"], "ocs-ci-ocp.yaml")
     with open(ocp_conf_path, "w") as ocp_conf_file:
         ocp_conf_file.write(yaml.safe_dump(ocp_conf))
 
-    if bool(env.get("UPGRADE")) is True:
+    if upgrade:
         ocs_conf = get_ocsci_conf(pre_upgrade=True)
+        ocs_conf["ENV_DATA"]["skip_ocp_deployment"] = True
         ocs_pre_conf_path = os.path.join(env["WORKSPACE"], "ocs-ci-pre-ocs.yaml")
         with open(ocs_pre_conf_path, "w") as ocs_pre_conf_file:
             ocs_pre_conf_file.write(yaml.safe_dump(ocs_conf))
