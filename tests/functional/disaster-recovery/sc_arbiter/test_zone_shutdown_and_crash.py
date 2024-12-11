@@ -195,7 +195,7 @@ class TestZoneShutdownsAndCrashes:
         for i in range(iteration):
             log.info(f"------ Iteration {i+1} ------")
 
-            check_for_logwriter_workload_pods(sc_obj)
+            check_for_logwriter_workload_pods(sc_obj, nodes=nodes)
             log.info("CephFS and RBD workloads are running successfully")
 
             # note the file names created
@@ -317,7 +317,7 @@ class TestZoneShutdownsAndCrashes:
             log.info("Successfully verified with post failure checks for the workloads")
 
         # update the logwriter/reader pod details with the latest
-        check_for_logwriter_workload_pods(sc_obj)
+        check_for_logwriter_workload_pods(sc_obj, nodes=nodes)
 
         # check for any data loss through logwriter logs
         assert sc_obj.check_for_data_loss(
@@ -431,7 +431,7 @@ class TestZoneShutdownsAndCrashes:
 
         for i in range(iteration):
             log.info(f"------ Iteration {i+1} ------")
-            check_for_logwriter_workload_pods(sc_obj)
+            check_for_logwriter_workload_pods(sc_obj, nodes=nodes)
             log.info("All logwriter workload pods are running successfully")
 
             # note the file names created
@@ -537,7 +537,7 @@ class TestZoneShutdownsAndCrashes:
         log.info("Stoped the VM successfully")
 
         # check for any data loss
-        check_for_logwriter_workload_pods(sc_obj)
+        check_for_logwriter_workload_pods(sc_obj, nodes=nodes)
 
         assert sc_obj.check_for_data_loss(
             constants.LOGWRITER_CEPHFS_LABEL

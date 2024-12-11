@@ -50,7 +50,7 @@ class TestNetSplit:
             except CephHealthException as e:
                 assert (
                     "HEALTH_WARN" in e.args[0]
-                ), f"Ignoring Ceph health warnings: {e.args[0]}"
+                ), f"Ceph seems to be in HEALTH_ERR state: {e.args[0]}"
                 get_ceph_tools_pod().exec_ceph_cmd(ceph_cmd="ceph crash archive-all")
                 logger.info("Archived ceph crash!")
 
@@ -152,7 +152,7 @@ class TestNetSplit:
         md5sum_before = vm_obj.run_ssh_cmd(command="md5sum /file_1.txt")
 
         # note all the pod names
-        check_for_logwriter_workload_pods(sc_obj)
+        check_for_logwriter_workload_pods(sc_obj, nodes=nodes)
 
         # note the file names created and each file start write time
         # note the file names created
@@ -223,7 +223,7 @@ class TestNetSplit:
         sc_obj.post_failure_checks(start_time, end_time, wait_for_read_completion=False)
 
         # check for any data loss
-        check_for_logwriter_workload_pods(sc_obj)
+        check_for_logwriter_workload_pods(sc_obj, nodes=nodes)
         assert sc_obj.check_for_data_loss(
             constants.LOGWRITER_CEPHFS_LABEL
         ), "[CephFS] Data is lost"
