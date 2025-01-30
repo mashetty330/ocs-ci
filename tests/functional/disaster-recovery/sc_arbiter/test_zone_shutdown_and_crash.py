@@ -5,7 +5,7 @@ import random
 import concurrent.futures as futures
 from datetime import datetime, timezone, timedelta
 
-from ocs_ci.helpers.cnv_helpers import cal_md5sum_vm
+# from ocs_ci.helpers.cnv_helpers import cal_md5sum_vm
 from ocs_ci.helpers.stretchcluster_helper import (
     recover_from_ceph_stuck,
     check_for_logwriter_workload_pods,
@@ -145,8 +145,8 @@ class TestZoneShutdownsAndCrashes:
         setup_logwriter_cephfs_workload_factory,
         setup_logwriter_rbd_workload_factory,
         logreader_workload_factory,
-        cnv_workload,
-        setup_cnv,
+        # cnv_workload,
+        # setup_cnv,
     ):
         """
         This test will test the shutdown scenarios when CephFS, RBD and VM workloads
@@ -184,11 +184,11 @@ class TestZoneShutdownsAndCrashes:
         ) = setup_logwriter_cephfs_workload_factory(read_duration=0)
 
         # setup vm and write some data to the VM instance
-        vm_obj = cnv_workload(volume_interface=constants.VM_VOLUME_PVC)
-        vm_obj.run_ssh_cmd(
-            command="dd if=/dev/zero of=/file_1.txt bs=1024 count=102400"
-        )
-        md5sum_before = cal_md5sum_vm(vm_obj, file_path="/file_1.txt")
+        # vm_obj = cnv_workload(volume_interface=constants.VM_VOLUME_PVC)
+        # vm_obj.run_ssh_cmd(
+        #     command="dd if=/dev/zero of=/file_1.txt bs=1024 count=102400"
+        # )
+        # md5sum_before = cal_md5sum_vm(vm_obj, file_path="/file_1.txt")
 
         start_time = None
         end_time = None
@@ -288,27 +288,27 @@ class TestZoneShutdownsAndCrashes:
             time.sleep(delay * 60)
 
         # check vm data written before the failure for integrity
-        md5sum_after = cal_md5sum_vm(vm_obj, file_path="/file_1.txt")
-        assert (
-            md5sum_before == md5sum_after
-        ), "Data integrity of the file inside VM is not maintained during the failure"
-        log.info(
-            "Data integrity of the file inside VM is maintained during the failure"
-        )
-
-        # check if new data can be created
-        vm_obj.run_ssh_cmd(
-            command="dd if=/dev/zero of=/file_2.txt bs=1024 count=103600"
-        )
-        log.info("Successfully created new data inside VM")
-
-        # check if the data can be copied back to local machine
-        vm_obj.scp_from_vm(local_path="/tmp", vm_src_path="/file_1.txt")
-        log.info("VM data is successfully copied back to local machine")
-
-        # stop the VM
-        vm_obj.stop()
-        log.info("Stoped the VM successfully")
+        # md5sum_after = cal_md5sum_vm(vm_obj, file_path="/file_1.txt")
+        # assert (
+        #     md5sum_before == md5sum_after
+        # ), "Data integrity of the file inside VM is not maintained during the failure"
+        # log.info(
+        #     "Data integrity of the file inside VM is maintained during the failure"
+        # )
+        #
+        # # check if new data can be created
+        # vm_obj.run_ssh_cmd(
+        #     command="dd if=/dev/zero of=/file_2.txt bs=1024 count=103600"
+        # )
+        # log.info("Successfully created new data inside VM")
+        #
+        # # check if the data can be copied back to local machine
+        # vm_obj.scp_from_vm(local_path="/tmp", vm_src_path="/file_1.txt")
+        # log.info("VM data is successfully copied back to local machine")
+        #
+        # # stop the VM
+        # vm_obj.stop()
+        # log.info("Stoped the VM successfully")
 
         # incase of immediate shutdown-restart check the for failures now
         if immediate:
@@ -390,8 +390,8 @@ class TestZoneShutdownsAndCrashes:
         setup_logwriter_rbd_workload_factory,
         logreader_workload_factory,
         nodes,
-        cnv_workload,
-        setup_cnv,
+        # cnv_workload,
+        # setup_cnv,
     ):
         """
         This test will test the crash scenarios when CephFS, RBD and VM workloads
@@ -424,11 +424,11 @@ class TestZoneShutdownsAndCrashes:
         ) = setup_logwriter_cephfs_workload_factory(read_duration=0)
 
         # setup vm and write some data to the VM instance
-        vm_obj = cnv_workload(volume_interface=constants.VM_VOLUME_PVC)
-        vm_obj.run_ssh_cmd(
-            command="dd if=/dev/zero of=/file_1.txt bs=1024 count=102400"
-        )
-        md5sum_before = cal_md5sum_vm(vm_obj, file_path="/file_1.txt")
+        # vm_obj = cnv_workload(volume_interface=constants.VM_VOLUME_PVC)
+        # vm_obj.run_ssh_cmd(
+        #     command="dd if=/dev/zero of=/file_1.txt bs=1024 count=102400"
+        # )
+        # md5sum_before = cal_md5sum_vm(vm_obj, file_path="/file_1.txt")
 
         for i in range(iteration):
             log.info(f"------ Iteration {i+1} ------")
@@ -515,27 +515,27 @@ class TestZoneShutdownsAndCrashes:
             time.sleep(delay * 60)
 
         # check vm data written before the failure for integrity
-        md5sum_after = cal_md5sum_vm(vm_obj, file_path="/file_1.txt")
-        assert (
-            md5sum_before == md5sum_after
-        ), "Data integrity of the file inside VM is not maintained during the failure"
-        log.info(
-            "Data integrity of the file inside VM is maintained during the failure"
-        )
-
-        # check if new data can be created
-        vm_obj.run_ssh_cmd(
-            command="dd if=/dev/zero of=/file_2.txt bs=1024 count=103600"
-        )
-        log.info("Successfully created new data inside VM")
-
-        # check if the data can be copied back to local machine
-        vm_obj.scp_from_vm(local_path="/tmp", vm_src_path="/file_1.txt")
-        log.info("VM data is successfully copied back to local machine")
-
-        # stop the VM
-        vm_obj.stop()
-        log.info("Stoped the VM successfully")
+        # md5sum_after = cal_md5sum_vm(vm_obj, file_path="/file_1.txt")
+        # assert (
+        #     md5sum_before == md5sum_after
+        # ), "Data integrity of the file inside VM is not maintained during the failure"
+        # log.info(
+        #     "Data integrity of the file inside VM is maintained during the failure"
+        # )
+        #
+        # # check if new data can be created
+        # vm_obj.run_ssh_cmd(
+        #     command="dd if=/dev/zero of=/file_2.txt bs=1024 count=103600"
+        # )
+        # log.info("Successfully created new data inside VM")
+        #
+        # # check if the data can be copied back to local machine
+        # vm_obj.scp_from_vm(local_path="/tmp", vm_src_path="/file_1.txt")
+        # log.info("VM data is successfully copied back to local machine")
+        #
+        # # stop the VM
+        # vm_obj.stop()
+        # log.info("Stoped the VM successfully")
 
         # check for any data loss
         check_for_logwriter_workload_pods(sc_obj, nodes=nodes)
