@@ -216,6 +216,7 @@ class TestDeleteObjects:
         bucket_factory,
         reduce_expiration_interval,
         scale_noobaa_resources_session,
+        change_lifecycle_schedule_min,
         change_lifecycle_batch_size,
         awscli_pod_session,
         test_directory_setup,
@@ -231,6 +232,10 @@ class TestDeleteObjects:
         # reduce expiration interval to 1 minute
         reduce_expiration_interval(interval=1)
         log.info("Reduced expiration interval to 1 minute")
+
+        # change lifecycle schedule minutes
+        change_lifecycle_schedule_min(interval=1)
+        log.info("Change lifecycle schedyle minute to 1 minute")
 
         # change lifecycle batch size to 10K to enable faster deletion
         change_lifecycle_batch_size(new_lifecycle_batch_size=10000)
@@ -251,7 +256,7 @@ class TestDeleteObjects:
             test_directory_setup.origin_dir,
             f"s3://{bucket.name}",
             mcg_obj_session,
-            timeout=7200,
+            timeout=10800,
         )
         log.info(f"Uploaded objects to the bucket {bucket.name}")
 
@@ -272,8 +277,10 @@ class TestDeleteObjects:
             )
         else:
             # remove the objects in the bucket recursively
-            rm_object_recursive(awscli_pod_session, bucket.name, mcg_obj_session)
+            rm_object_recursive(
+                awscli_pod_session, bucket.name, mcg_obj_session, timeout=7200
+            )
             log.info("Deleted objects from the bucket recursively")
 
         # verify that all the objects are marked as deleted
-        verify_objs_deleted_from_objmds(bucket.name)
+        verify_objs_deleted_from_objmds(bucket.name, timeout=64800, sleep=90)
