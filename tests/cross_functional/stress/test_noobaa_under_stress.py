@@ -210,6 +210,7 @@ def test_sample(
     scale_noobaa_resources_session,
     setup_stress_testing_buckets,
     mcg_obj_session,
+    disable_debug_logs,
 ):
     nb_stress_cli_pod_1 = nb_stress_cli_pods[0]
     nb_stress_cli_pod_2 = nb_stress_cli_pods[1]
